@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chain Breakers</title>
+</head>
+<link
+  href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:wght@800&display=swap"
+  rel="stylesheet">
+<style>
+  :root {
+    --paper: #F2F6F5;
+    --ink: #3B1F5C;
+    --muted: #4F6B70;
+    --line: #C6D6D4;
+    --sick: #D4471B;
+    --safe: #2F8F5B;
+    --surface: #FFFFFF;
+  }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Atkinson Hyperlegible", sans-serif;
+    font-size: 1.125rem;
+    line-height: 1.6;
+    max-width: 44rem;
+    margin: 0 auto;
+    padding: 1.25rem;
+  }
+
+  h1 {
+    font-family: "Bricolage Grotesque", sans-serif;
+    font-size: 3rem;
+    line-height: 1.1;
+  }
+
+  p {
+    color: var(--muted);
+  }
+
+  .chain {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 2.5rem;
+  }
+
+  .person {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    border: 3px solid var(--line);
+    background: var(--surface);
+  }
+
+  .sick {
+    animation: catch 0.4s ease-out forwards;
+    animation-delay: calc(var(--i) * 0.5s);
+  }
+
+  @keyframes catch {
+    to {
+      background: var(--sick);
+      border-color: var(--sick);
+    }
+  }
+
+  .safe {
+    border-color: var(--safe);
+  }
+
+  .break {
+    padding: 0.2rem 0.7rem;
+    border: 2px dashed var(--safe);
+    border-radius: 1rem;
+    color: var(--safe);
+    font-weight: 700;
+    font-size: 0.95rem;
+    opacity: 0;
+    animation: appear 0.4s ease-out 2.4s forwards;
+  }
+
+  @keyframes appear {
+    to {
+      opacity: 1;
+    }
+  }
+
+  .links {
+    margin-top: 4rem;
+  }
+
+  h2,
+  h3 {
+    font-family: "Bricolage Grotesque", sans-serif;
+    line-height: 1.1;
+  }
+
+  .breaker {
+    color: var(--safe);
+  }
+
+  .link-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 2rem;
+    counter-reset: link;
+  }
+
+  .link-list li {
+    counter-increment: link;
+    position: relative;
+    padding: 0 0 2rem 3.75rem;
+  }
+
+  .link-list li::before {
+    content: counter(link);
+    position: absolute;
+    left: 0;
+    top: 0;
+    box-sizing: border-box;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    border: 3px solid var(--ink);
+    display: grid;
+    place-items: center;
+    font-family: "Bricolage Grotesque", sans-serif;
+    font-weight: 800;
+  }
+
+  .link-list li::after {
+    content: "";
+    position: absolute;
+    left: calc(1.25rem - 1.5px);
+    top: 2.5rem;
+    bottom: 0;
+    border-left: 3px dashed var(--line);
+  }
+
+  .link-list li:last-child::after {
+    display: none;
+  }
+
+  .link-list h3 {
+    font-size: 1.4rem;
+    margin: 0 0 0.5rem;
+    padding-top: 0.4rem;
+  }
+
+  .link-list p {
+    margin: 0 0 0.4rem;
+  }
+
+  .link-toggle {
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    text-align: left;
+  }
+
+  .link-toggle::after {
+    content: " +";
+    color: var(--safe);
+  }
+
+  .link-toggle[aria-expanded="true"]::after {
+    content: " –";
+  }
+
+  .link-toggle:focus-visible {
+    outline: 3px solid var(--safe);
+    outline-offset: 4px;
+  }
+
+  .link-list .fact {
+    background: var(--surface);
+    border-left: 4px solid var(--safe);
+    padding: 0.75rem 1rem;
+    margin-top: 0.75rem;
+  }
+
+  .simulator {
+    margin-top: 4rem;
+  }
+
+  .town {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 0.4rem;
+    max-width: 24rem;
+    margin-top: 1.5rem;
+  }
+
+  .dot {
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 2px solid var(--line);
+    background: var(--surface);
+  }
+
+  .controls {
+    display: grid;
+    gap: 0.5rem;
+    border: 2px solid var(--line);
+    border-radius: 0.75rem;
+    padding: 1rem 1.25rem;
+    margin-top: 1.5rem;
+  }
+
+  .controls legend {
+    font-weight: 700;
+    padding: 0 0.4rem;
+  }
+
+  .controls label {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    cursor: pointer;
+  }
+
+  .controls input {
+    width: 1.2rem;
+    height: 1.2rem;
+    accent-color: var(--safe);
+  }
+
+  .start {
+    margin-top: 1rem;
+    font: inherit;
+    font-weight: 700;
+    color: var(--paper);
+    background: var(--ink);
+    border: none;
+    border-radius: 2rem;
+    padding: 0.7rem 1.4rem;
+    cursor: pointer;
+  }
+
+  .start:focus-visible {
+    outline: 3px solid var(--safe);
+    outline-offset: 3px;
+  }
+
+  .dot.infected {
+    background: var(--sick);
+    border-color: var(--sick);
+  }
+
+  .dot.recovered {
+    background: var(--line);
+    border-color: var(--line);
+  }
+
+  .dot.vaccinated {
+    border-color: var(--safe);
+  }
+
+  .start:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .key,
+  .note {
+    font-size: 0.95rem;
+  }
+
+  .result {
+    font-weight: 700;
+    color: var(--ink);
+  }
+      .quiz {
+      margin-top: 4rem;
+      padding-bottom: 4rem;
+    }
+    .quiz-card {
+      background: var(--surface);
+      border: 2px solid var(--line);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+    }
+    .quiz-count {
+      font-size: 0.95rem;
+      margin: 0;
+    }
+    .quiz-claim {
+      font-family: "Bricolage Grotesque", sans-serif;
+      font-size: 1.6rem;
+      line-height: 1.2;
+      color: var(--ink);
+      margin: 0.5rem 0 1.25rem;
+    }
+    .quiz-buttons {
+      display: flex;
+      gap: 0.75rem;
+    }
+    .quiz-choice {
+      font: inherit;
+      font-weight: 700;
+      color: var(--ink);
+      background: none;
+      border: 2px solid var(--ink);
+      border-radius: 2rem;
+      padding: 0.6rem 1.6rem;
+      cursor: pointer;
+    }
+    .quiz-choice:focus-visible {
+      outline: 3px solid var(--safe);
+      outline-offset: 3px;
+    }
+    .quiz-choice.correct {
+      background: var(--safe);
+      border-color: var(--safe);
+      color: var(--surface);
+    }
+    .quiz-choice.wrong {
+      background: var(--sick);
+      border-color: var(--sick);
+      color: var(--surface);
+    }
+    .quiz-choice:disabled {
+      cursor: default;
+    }
+    .quiz-feedback {
+      color: var(--ink);
+      margin: 1.25rem 0 0;
+    }
+        .site-footer {
+      border-top: 1px solid var(--line);
+      padding: 2rem 0;
+      font-size: 0.95rem;
+    }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sick {
+      animation: none;
+      background: var(--sick);
+      border-color: var(--sick);
+    }
+
+    .break {
+      animation: none;
+      opacity: 1;
+    }
+  }
+</style>
+
+<body>
+  <h1>Every outbreak is a chain. Prevention breaks it.</h1>
+  <p>Germs spread from person to person through a series of links. Break one link and the spread stops.</p>
+  <p>I care about public health because many illnesses can be prevented when people have the right information. I built
+    Chain Breakers to make prevention easy to understand and share. </p>
+  <div class="chain">
+    <span class="person sick" style="--i:0"></span>
+    <span class="person sick" style="--i:1"></span>
+    <span class="person sick" style="--i:2"></span>
+    <span class="person sick" style="--i:3"></span>
+    <span class="break">Chain broken</span>
+    <span class="person safe"></span>
+    <span class="person safe"></span>
+    <span class="person safe"></span>
+    <span class="person safe"></span>
+    <p class="chain-caption">One handwash, one vaccine, one bed net: each can stop the chain.</p>
+  </div>
+  <section class="links">
+    <h2>The six links of the chain of infection</h2>
+    <p>Health workers use this model to decide where to act. Each prevention measure targets one link.</p>
+
+    <ol class="link-list">
+      <li>
+        <h3><button class="link-toggle" aria-expanded="false">The germ</button></h3>
+        <p>A virus, bacterium, parasite or fungus that can cause disease.</p>
+        <p class="breaker"><strong>Break it with:</strong> treatment, disinfecting surfaces, boiling or treating water.
+        </p>
+        <p class="fact" hidden><strong>Did you know?</strong> Most germs are too small to see without a microscope, so
+          hands can look clean and still carry them.</p>
+      </li>
+      <li>
+        <h3><button class="link-toggle" aria-expanded="false">Where it lives</button></h3>
+        <p>People, animals, dirty water, soil or food where the germ survives and multiplies.</p>
+        <p class="breaker"><strong>Break it with:</strong> clean water, safe sanitation, treating people who are sick.
+        </p>
+        <p class="fact" hidden><strong>Did you know?</strong> Cholera bacteria spread through water contaminated with
+          stool, which is why treating drinking water prevents outbreaks.</p>
+      </li>
+      <li>
+        <h3><button class="link-toggle" aria-expanded="false">How it leaves</button></h3>
+        <p>Coughs, sneezes, stool, blood or other body fluids.</p>
+        <p class="breaker"><strong>Break it with:</strong> covering coughs, using toilets or latrines, safe disposal of
+          waste.</p>
+        <p class="fact" hidden><strong>Did you know?</strong> Germs can survive on surfaces for hours or days, which is
+          why cleaning and disinfecting are important.</p>
+      </li>
+      <li>
+        <h3><button class="link-toggle" aria-expanded="false">How it travels</button></h3>
+        <p>Hands, droplets in the air, contaminated food or water, or insects such as mosquitoes.</p>
+        <p class="breaker"><strong>Break it with:</strong> handwashing with soap, sleeping under treated bed nets, safe
+          food handling.</p>
+        <p class="fact" hidden><strong>Did you know?</strong> Mosquitoes can transmit diseases like malaria and dengue,
+          which is why using insecticide-treated bed nets is important.</p>
+      </li>
+      <li>
+        <h3><button class="link-toggle" aria-expanded="false">How it gets in</button></h3>
+        <p>The mouth, nose, eyes or broken skin.</p>
+        <p class="breaker"><strong>Break it with:</strong> masks in crowded places, covering wounds, not touching your
+          face with unwashed hands.</p>
+        <p class="fact" hidden><strong>Did you know?</strong> The flu virus can enter the body through the mouth, nose,
+          or eyes, which is why washing hands and avoiding touching your face are important.</p>
+      </li>
+      <li>
+        <h3><button class="link-toggle" aria-expanded="false">Someone who can get sick</button></h3>
+        <p>A person without protection, especially babies, older people and those with weak immunity.</p>
+        <p class="breaker"><strong>Break it with:</strong> vaccination, good nutrition, regular health check-ups.</p>
+        <p class="fact" hidden><strong>Did you know?</strong> People with weakened immune systems, such as those with
+          HIV/AIDS or cancer, are more vulnerable to infections.</p>
+      </li>
+    </ol>
+  </section>
+  <section class="simulator">
+    <h2>Try it: stop an outbreak</h2>
+    <p>This town has 100 people. Choose which prevention measures they use, then start an outbreak.</p>
+    <fieldset class="controls">
+      <legend>Prevention measures</legend>
+      <label><input type="checkbox" id="wash"> Handwashing with soap</label>
+      <label><input type="checkbox" id="cover"> Covering coughs and sneezes</label>
+      <label><input type="checkbox" id="vaccine"> Vaccination</label>
+      <label><input type="checkbox" id="home"> Staying home when sick</label>
+    </fieldset>
+    <button class="start" id="start">Start outbreak</button>
+    <div class="town" id="town"></div>
+    <p class="key">Red: sick. Grey: recovered. Green outline: vaccinated.</p>
+    <p class="result" id="result" aria-live="polite"></p>
+    <p class="note">This is a simplified model for learning. Real outbreaks depend on many more factors.</p>
+  </section>
+  <section class="quiz">
+    <h2>Myth or fact?</h2>
+    <p>Test what you know about how illness spreads.</p>
+    <div class="quiz-card">
+      <p class="quiz-count" id="quiz-count"></p>
+      <p class="quiz-claim" id="quiz-claim"></p>
+      <div class="quiz-buttons">
+        <button class="quiz-choice" data-answer="myth">Myth</button>
+        <button class="quiz-choice" data-answer="fact">Fact</button>
+      </div>
+      <p class="quiz-feedback" id="quiz-feedback" aria-live="polite"></p>
+      <button class="start" id="quiz-next" hidden>Next question</button>
+    </div>
+  </section>
+    <footer class="site-footer">
+    <p>Built by Marion Nasambu Wataka with HTML, CSS and JavaScript. Health information is for learning; ask a health worker for personal advice.</p>
+  </footer>
+  <script>
+    const buttons = document.querySelectorAll(".link-toggle");
+
+    buttons.forEach(function (button) {
+      button.addEventListener("click", function () {
+        const fact = button.closest("li").querySelector(".fact");
+        const isOpen = button.getAttribute("aria-expanded") === "true";
+
+        // Close every fact
+        buttons.forEach(function (otherButton) {
+          otherButton.setAttribute("aria-expanded", "false");
+          otherButton.closest("li").querySelector(".fact").hidden = true;
+        });
+
+        // Open this one, unless it was already open
+        if (!isOpen) {
+          button.setAttribute("aria-expanded", "true");
+          fact.hidden = false;
+        }
+      });
+    });
+    // ---------- Outbreak simulator ----------
+    const town = document.getElementById("town");
+    const people = [];
+
+    for (let i = 0; i < 100; i++) {
+      const dot = document.createElement("span");
+      dot.className = "dot";
+      town.appendChild(dot);
+      people.push({ element: dot, state: "healthy" });
+    }
+    const startButton = document.getElementById("start");
+    const result = document.getElementById("result");
+
+    // Update every dot to match its person's state
+    function draw() {
+      people.forEach(function (person) {
+        person.element.className = "dot " + person.state;
+      });
+    }
+
+    // Pick a random person from the town
+    function randomPerson() {
+      return people[Math.floor(Math.random() * people.length)];
+    }
+
+    startButton.addEventListener("click", function () {
+      const measures = {
+        wash: document.getElementById("wash").checked,
+        cover: document.getElementById("cover").checked,
+        vaccine: document.getElementById("vaccine").checked,
+        home: document.getElementById("home").checked
+      };
+
+      // Chance that one meeting spreads the illness
+      let chance = 0.3;
+      if (measures.wash) chance = chance * 0.6;
+      if (measures.cover) chance = chance * 0.7;
+
+      // People each sick person meets per day
+      const contacts = measures.home ? 1 : 3;
+
+      // Reset the town, vaccinating about 70% if chosen
+      people.forEach(function (person) {
+        person.state = "healthy";
+        person.daysSick = 0;
+        if (measures.vaccine && Math.random() < 0.7) {
+          person.state = "vaccinated";
+        }
+      });
+
+      // The first sick person must be unvaccinated
+      let first = randomPerson();
+      while (first.state === "vaccinated") {
+        first = randomPerson();
+      }
+      first.state = "infected";
+
+      startButton.disabled = true;
+      result.textContent = "Outbreak in progress…";
+      draw();
+
+      let day = 0;
+      const timer = setInterval(function () {
+        day++;
+        const sickToday = people.filter(function (person) {
+          return person.state === "infected";
+        });
+
+        sickToday.forEach(function (person) {
+          for (let i = 0; i < contacts; i++) {
+            const other = randomPerson();
+            if (other.state === "healthy" && Math.random() < chance) {
+              other.state = "infected";
+            }
+          }
+          person.daysSick++;
+          if (person.daysSick >= 4) {
+            person.state = "recovered";
+          }
+        });
+
+        draw();
+
+        const stillSick = people.some(function (person) {
+          return person.state === "infected";
+        });
+
+        if (!stillSick) {
+          clearInterval(timer);
+          const total = people.filter(function (person) {
+            return person.state === "recovered";
+          }).length;
+          let message;
+          if (total <= 10) {
+            message = "The chain was broken early. Prevention stopped the illness before it could spread.";
+          } else if (total <= 50) {
+            message = "Prevention slowed the outbreak, but it still reached many people. Try combining more measures.";
+          } else {
+            message = "The illness reached most of the town. Each measure helps a little; combining them works best.";
+          }
+          result.textContent = "Outbreak over after " + day + " days. " + total + " of 100 people got sick. " + message;
+          startButton.disabled = false;
+        }
+      }, 400);
+    });
+        // ---------- Myth or fact quiz ----------
+    const questions = [
+      {
+        claim: "Antibiotics cure the flu.",
+        answer: "myth",
+        explanation: "Flu is caused by a virus. Antibiotics only work against bacteria, so they don't help with flu."
+      },
+      {
+        claim: "Mosquito bites can spread malaria.",
+        answer: "fact",
+        explanation: "Malaria parasites are carried by certain mosquitoes. Sleeping under a treated bed net prevents bites at night."
+      },
+      {
+        claim: "People who look healthy can't spread illness.",
+        answer: "myth",
+        explanation: "Some illnesses, like flu, can spread before symptoms appear, so prevention habits matter even when you feel fine."
+      },
+      {
+        claim: "Boiling water kills most germs that cause diarrhoea.",
+        answer: "fact",
+        explanation: "Bringing water to a rolling boil kills most disease-causing germs, which is why it's a common way to make water safe."
+      },
+      {
+        claim: "Hand sanitiser works as well as soap in every situation.",
+        answer: "myth",
+        explanation: "Soap and water work better when hands are visibly dirty or greasy. Sanitiser is a good option when soap isn't available."
+      },
+      {
+        claim: "Vaccines can protect people who aren't vaccinated.",
+        answer: "fact",
+        explanation: "When enough people are vaccinated, germs struggle to spread, protecting those who can't be vaccinated. This is called herd immunity."
+      }
+    ];
+
+       let current = 0;
+    let score = 0;
+    const quizCount = document.getElementById("quiz-count");
+    const quizClaim = document.getElementById("quiz-claim");
+    const quizFeedback = document.getElementById("quiz-feedback");
+    const quizNext = document.getElementById("quiz-next");
+    const choices = document.querySelectorAll(".quiz-choice");
+
+    // Show the current question and reset the buttons
+    function showQuestion() {
+      const question = questions[current];
+      quizCount.textContent = "Question " + (current + 1) + " of " + questions.length;
+      quizClaim.textContent = question.claim;
+      quizFeedback.textContent = "";
+      quizNext.hidden = true;
+      choices.forEach(function (choice) {
+        choice.hidden = false;
+        choice.disabled = false;
+        choice.classList.remove("correct", "wrong");
+      });
+    }
+
+    // Show the final score
+    function showScore() {
+      quizCount.textContent = "Quiz complete";
+      quizClaim.textContent = "You scored " + score + " out of " + questions.length + ".";
+      if (score === questions.length) {
+        quizFeedback.textContent = "Perfect score. Share what you know with someone today.";
+      } else {
+        quizFeedback.textContent = "Every fact you learned is one more way to break the chain.";
+      }
+      choices.forEach(function (choice) {
+        choice.hidden = true;
+      });
+      quizNext.textContent = "Play again";
+    }
+
+    // When Myth or Fact is clicked
+    choices.forEach(function (choice) {
+      choice.addEventListener("click", function () {
+        const question = questions[current];
+        const picked = choice.dataset.answer;
+
+        if (picked === question.answer) {
+          score++;
+          choice.classList.add("correct");
+          quizFeedback.textContent = "Correct. " + question.explanation;
+        } else {
+          choice.classList.add("wrong");
+          quizFeedback.textContent = "Not quite, it's a " + question.answer + ". " + question.explanation;
+        }
+
+        choices.forEach(function (otherChoice) {
+          otherChoice.disabled = true;
+        });
+
+        if (current === questions.length - 1) {
+          quizNext.textContent = "See my score";
+        } else {
+          quizNext.textContent = "Next question";
+        }
+        quizNext.hidden = false;
+        quizNext.focus();
+      });
+    });
+
+    // When Next, See my score or Play again is clicked
+    quizNext.addEventListener("click", function () {
+      current++;
+      if (current < questions.length) {
+        showQuestion();
+      } else if (current === questions.length) {
+        showScore();
+      } else {
+        current = 0;
+        score = 0;
+        showQuestion();
+      }
+    });
+
+    showQuestion();
+  </script>
+</body>
+
+</html>
